@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="search.css">
+</head>
+
+<body ng-app="app" ng-controller="mainController">
+    <div class="tools">
+        <button class="ss-btn ss-btn-info ss-checkBox" ng-click="searchBoxShowline()">搜索(支持字母大小写，首字母搜索)</button>
+        <bondshortnamesearchbox checkbox-content="checkboxText" checkbox-show="searchBoxShow"></bondshortnamesearchbox>
+    </div>
+    <script src="angular.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+        var app = angular.module('app', []);
+        app.controller('mainController', ['$scope', function($scope) {
+
+            //点击页面其他位置关闭搜索框
+            document.body.addEventListener("click", clickout);
+
+            function clickout() {
+                // debugger
+                var event = window.event;
+                console.log(event.path);
+                for (var i = 0; i < event.path.length; i++) {
+                    // if (event.path[i].className.indexOf("main-search-box") >-1 ||
+                    //     event.path[i].className.indexOf("ss-checkBox") > -1) {
+                    //     return;
+                    // };
+                    
+                    // 用正则表达式写的判断程序
+                    if (true == ((/main\-search\-box/.test(event.path[i].className)) ||
+                     (/ss\-checkBox/.test(event.path[i].className)))) {
+                        return;
+                    };
+                };
+                $scope.searchBoxShow = false;
+                $scope.$apply();
+            };
+
+            // console.log($scope.searchBoxShow)
+
+            $scope.searchBoxShowline = function() {
+                // console.log("点击改变前：" + $scope.searchBoxShow)
+
+                $scope.searchBoxShow = !$scope.searchBoxShow;
+
+                // console.log($scope.searchBoxShow)
+            };
+        }]);
+
+        app.directive("bondshortnamesearchbox",
+            function() {
+                return {
+                    restrict: "E",
+                    scope: {
+                        checkboxContent: '=',
+                        checkboxShow: '=',
+                        inputShow: '='
+                    },
+                    template: '<div class="main-search-box" ng-show="checkboxShow"><input class="bond-search" type="text" ng-model="inputname" ng-keyup="inputsearch($event)"></input><div ng-if="inputclearshow" class="clear-search" ng-click="clearsearch()" title="清除搜索框内容">×</div><div class="border-shadow"></div><div ng-if="searchSuggestShow"><div class="search-suggest"><div class="searchbox-checkbox-all"><input type="checkbox" class="ss-checkbox-directive" ng-model="allcheckboxallselect"  ng-change="checkboxallselect()"/>全部选择</div><div ng-repeat=" x in checkboxsuggestText " class="out-searchbox" ng-click="checkboxselect()"><input type="checkbox" class="ss-checkbox-directive searchbox-checkbox" ng-model="x.checked" />{{x.Name}}</div></div></div></div>',
+                    link: function($scope, $element, $attr) {
+                        $scope.checkboxContent = [{
+                            Name: "百度",
+                            SpellName: "BAIDU",
+                            SpellNameFirst: "BD"
+                        }, {
+                            Name: "百度1",
+                            SpellName: "BAIDU1",
+                            SpellNameFirst: "BD1"
+                        }, {
+                            Name: "百度2",
+                            SpellName: "BAIDU2",
+                            SpellNameFirst: "BD2"
+                        }, {
+                            Name: "百度3",
+                            SpellName: "BAIDU3",
+                            SpellNameFirst: "BD3"
+                        }, {
+                            Name: "阿里巴巴",
+                            SpellName: "ALIBABA",
+                            SpellNameFirst: "ALBB"
+                        }, {
+                            Name: "阿里巴巴1",
+                            SpellName: "ALIBABA1",
+                            SpellNameFirst: "ALBB1"
+                        }, {
+                            Name: "阿里巴巴2",
+                            SpellName: "ALIBABA2",
+                            SpellNameFirst: "ALBB2"
+                        }, {
+                            Name: "阿里巴巴3",
+                            SpellName: "ALIBABA3",
+                            SpellNameFirst: "ALBB3"
+                        }, {
+                            Name: "阿里巴巴4",
+                            SpellName: "ALIBABA4",
+                            SpellNameFirst: "ALBB4"
+                        }, {
+                            Name: "腾讯企鹅",
+                            SpellName: "TENXUNQIE",
+                            SpellNameFirst: "TXQE"
+                        }, {
+                            Name: "腾讯企鹅1",
+                            SpellName: "TENXUNQIE1",
+                            SpellNameFirst: "TXQE1"
+                        }, {
+                            Name: "腾讯企鹅2",
+                            SpellName: "TENXUNQIE2",
+                            SpellNameFirst: "TXQE2"
+                        }, {
+                            Name: "腾讯企鹅3",
+                            SpellName: "TENXUNQIE3",
+                            SpellNameFirst: "TXQE3"
+                        }, {
+                            Name: "腾讯企鹅4",
+                            SpellName: "TENXUNQIE4",
+                            SpellNameFirst: "TXQE4"
+                        }, {
+                            Name: "腾讯企鹅5",
+                            SpellName: "TENXUNQIE5",
+                            SpellNameFirst: "TXQE5"
+                        }];
+
+                        $scope.clearsearch = function() {
+                            $scope.inputname = "";
+                            $scope.searchSuggestShow = false;
+                            $scope.inputclearshow = false;
+                            $scope.inputsearch();
+                        };
+
+                        $scope.inputsearch = function(e) {
+
+                            var keycode = (e = e || "").keyCode;
+                            var pushcheckboxsuggestText = [];
+                            var inputText = ($scope.inputname || "").toUpperCase();
+                            $scope.checkboxContent = $scope.checkboxContent || "";
+                            for (var i = 0; i < $scope.checkboxContent.length; i++) {
+                                var searchText = $scope.checkboxContent[i].Name;
+                                var searchspellText = $scope.checkboxContent[i].SpellName;
+                                var searchshortspellText = $scope.checkboxContent[i].SpellNameFirst;
+
+                                //筛选规则
+                                if ((searchText.split(inputText).length > 1 && searchText.split(inputText)[0] == "") ||
+                                    (searchspellText.split(inputText).length > 1 && searchspellText.split(inputText)[0] == "") ||
+                                    (searchshortspellText.split(inputText).length > 1 && searchshortspellText.split(inputText)[0] == "")) {
+
+                                    $scope.checkboxContent[i].checked = true;
+                                    pushcheckboxsuggestText.push($scope.checkboxContent[i]);
+                                }
+                            }
+
+                            $scope.allcheckboxallselect = true;
+
+                            //$scope.checkboxsuggestText是搜索之后用于显示在提示栏里面的数据
+                            $scope.checkboxsuggestText = pushcheckboxsuggestText;
+                            if (inputText == "") {
+                                $scope.inputclearshow = false;
+                                $scope.searchSuggestShow = true;
+                                for (var i = 0; i < $scope.checkboxContent.length; i++) {
+                                    $scope.checkboxContent[i].checked = true;
+                                };
+                                $scope.checkboxsuggestText = $scope.checkboxContent;
+                            } else {
+                                $scope.inputclearshow = true;
+                                $scope.searchSuggestShow = true;
+                            };
+
+                            if ($scope.checkboxsuggestText == "") {
+                                $scope.searchSuggestShow = false;
+                            };
+
+                            //回车键收起搜索框enter键盘码是13
+                            if (keycode == 13) {
+                                $scope.checkboxShow = false;
+                            };
+
+                            $scope.checkboxselect();
+                        };
+
+                        $scope.checkboxselect = function() {
+                            var pushcheckboxtableText = [];
+                            for (var i = 0; i < $scope.checkboxsuggestText.length; i++) {
+                                if ($scope.checkboxsuggestText[i].checked == true) {
+                                    pushcheckboxtableText.push($scope.checkboxsuggestText[i]);
+                                };
+                            };
+
+                            //$scope.checkboxtableText数组是checkbox选中的数据，可用于显示在页面
+                            $scope.checkboxtableText = pushcheckboxtableText;
+
+                            //这里存在一个BUG，如果下面使用注释的的方法$scope.allcheckboxallselect，
+                            //html里面数据没有更新
+                            var allcheck = angular.element(document.getElementsByClassName("ss-checkbox-directive")).scope();
+                            allcheck = allcheck || "";
+
+                            if ($scope.checkboxtableText.length < $scope.checkboxsuggestText.length) {
+                                allcheck.allcheckboxallselect = false;
+                                // $scope.allcheckboxallselect = false;
+                            } else {
+                                allcheck.allcheckboxallselect = true;
+                                // $scope.allcheckboxallselect = true;
+
+                            };
+                            console.log($scope.allcheckboxallselect)
+                        };
+
+                        $scope.checkboxallselect = function() {
+                            $scope.allcheckboxallselect = !$scope.allcheckboxallselect;
+                            if (angular.element(document.getElementsByClassName("ss-checkbox-directive")).scope().allcheckboxallselect == true) {
+                                for (var i = 0; i < $scope.checkboxsuggestText.length; i++) {
+                                    $scope.checkboxsuggestText[i].checked = true;
+                                }
+                            } else {
+                                for (var i = 0; i < $scope.checkboxsuggestText.length; i++) {
+                                    $scope.checkboxsuggestText[i].checked = false;
+                                }
+                            }
+                            $scope.checkboxselect();
+                        };
+
+                        $scope.$watch('checkboxContent', function(checkboxContent) {
+                            setTimeout(function() {
+                                _init();
+                                $scope.$apply();
+                            }, 100);
+                        });
+
+
+                        function _init() {
+                            $scope.inputsearch();
+                        };
+                    }
+                }
+            });
+    })();
+    </script>
+</body>
+
+</html>

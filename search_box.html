@@ -63,15 +63,15 @@
                     template: '<div class="main-search-box" ng-show="checkboxShow"><input class="bond-search" type="text" ng-model="inputname" ng-keyup="inputsearch($event)"></input><div ng-if="inputclearshow" class="clear-search" ng-click="clearsearch()" title="清除搜索框内容">×</div><div class="border-shadow"></div><div ng-if="searchSuggestShow"><div class="search-suggest"><div class="searchbox-checkbox-all"><input type="checkbox" class="ss-checkbox-directive" ng-model="allcheckboxallselect"  ng-change="checkboxallselect()"/>全部选择</div><div ng-repeat=" x in checkboxsuggestText " class="out-searchbox" ng-click="checkboxselect()"><input type="checkbox" class="ss-checkbox-directive searchbox-checkbox" ng-model="x.checked" />{{x.Name}}</div></div></div></div>',
                     link: function($scope, $element, $attr) {
                         $scope.checkboxContent = [{
-                            Name: "百度",
+                            Name: "01百度",
                             SpellName: "BAIDU",
                             SpellNameFirst: "BD"
                         }, {
-                            Name: "百度1",
+                            Name: "02百度1",
                             SpellName: "BAIDU1",
                             SpellNameFirst: "BD1"
                         }, {
-                            Name: "百度2",
+                            Name: "5百度2",
                             SpellName: "BAIDU2",
                             SpellNameFirst: "BD2"
                         }, {
@@ -79,7 +79,7 @@
                             SpellName: "BAIDU3",
                             SpellNameFirst: "BD3"
                         }, {
-                            Name: "阿里巴巴",
+                            Name: "qwr阿里巴巴",
                             SpellName: "ALIBABA",
                             SpellNameFirst: "ALBB"
                         }, {
@@ -87,31 +87,31 @@
                             SpellName: "ALIBABA1",
                             SpellNameFirst: "ALBB1"
                         }, {
-                            Name: "阿里巴巴2",
+                            Name: "42314阿里巴巴2",
                             SpellName: "ALIBABA2",
                             SpellNameFirst: "ALBB2"
                         }, {
-                            Name: "阿里巴巴3",
+                            Name: "gsg阿里巴巴3",
                             SpellName: "ALIBABA3",
                             SpellNameFirst: "ALBB3"
                         }, {
-                            Name: "阿里巴巴4",
+                            Name: "佛挡杀佛阿里巴巴4",
                             SpellName: "ALIBABA4",
                             SpellNameFirst: "ALBB4"
                         }, {
-                            Name: "腾讯企鹅",
+                            Name: "124腾讯企鹅",
                             SpellName: "TENXUNQIE",
                             SpellNameFirst: "TXQE"
                         }, {
-                            Name: "腾讯企鹅1",
+                            Name: "534腾讯企鹅1",
                             SpellName: "TENXUNQIE1",
                             SpellNameFirst: "TXQE1"
                         }, {
-                            Name: "腾讯企鹅2",
+                            Name: "213腾讯企鹅2",
                             SpellName: "TENXUNQIE2",
                             SpellNameFirst: "TXQE2"
                         }, {
-                            Name: "腾讯企鹅3",
+                            Name: "佛挡杀佛腾讯企鹅3",
                             SpellName: "TENXUNQIE3",
                             SpellNameFirst: "TXQE3"
                         }, {
@@ -119,7 +119,7 @@
                             SpellName: "TENXUNQIE4",
                             SpellNameFirst: "TXQE4"
                         }, {
-                            Name: "腾讯企鹅5",
+                            Name: "佛挡杀佛腾讯企鹅5",
                             SpellName: "TENXUNQIE5",
                             SpellNameFirst: "TXQE5"
                         }];
@@ -137,15 +137,25 @@
                             var pushcheckboxsuggestText = [];
                             var inputText = ($scope.inputname || "").toUpperCase();
                             $scope.checkboxContent = $scope.checkboxContent || "";
+                            inputText = inputText.replace(/\\/g, '\\\\');
+                            inputText = inputText.replace(/\./g, '\\.');
+                            inputText = inputText.replace(/\*/g, '\\*');
+                            inputText = inputText.replace(/\[/g, '\\[');
+                            inputText = inputText.replace(/\]/g, '\\]');
+                            inputText = inputText.replace(/\^/g, '\\^');
+                            inputText = inputText.replace(/\$/g, '\\$');
+                            inputText = inputText.replace(/\{/g, '\\{');
+                            inputText = inputText.replace(/\}/g, '\\}');
                             for (var i = 0; i < $scope.checkboxContent.length; i++) {
                                 var searchText = $scope.checkboxContent[i].Name;
                                 var searchspellText = $scope.checkboxContent[i].SpellName;
                                 var searchshortspellText = $scope.checkboxContent[i].SpellNameFirst;
+                                var ReginputText = RegExp(inputText);
 
-                                //筛选规则
-                                if ((searchText.split(inputText).length > 1 && searchText.split(inputText)[0] == "") ||
-                                    (searchspellText.split(inputText).length > 1 && searchspellText.split(inputText)[0] == "") ||
-                                    (searchshortspellText.split(inputText).length > 1 && searchshortspellText.split(inputText)[0] == "")) {
+                                //筛选规则,正则表达式
+                                if ((true == (ReginputText.test(searchText))) ||
+                                    (true == (ReginputText.test(searchspellText))) ||
+                                    (true == (ReginputText.test(searchshortspellText)))) {
 
                                     $scope.checkboxContent[i].checked = true;
                                     pushcheckboxsuggestText.push($scope.checkboxContent[i]);
